@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 
 /**
  * FAQSection
- * AdSense-friendly FAQ accordion with:
+ * AdSense-friendly FAQ accordion with dual-theme styling:
  * - Smooth expand/collapse via Framer Motion AnimatePresence
  * - Chevron rotation animation
  * - Only one item open at a time
@@ -45,10 +45,10 @@ export function FAQSection() {
           transition={{ duration: 0.5 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white mb-4">
             Frequently Asked Questions
           </h2>
-          <p className="text-zinc-400 text-lg">
+          <p className="text-zinc-600 dark:text-zinc-400 text-lg">
             Got questions? We&apos;ve got answers.
           </p>
         </motion.div>
@@ -65,8 +65,8 @@ export function FAQSection() {
             >
               <div
                 className={cn(
-                  'rounded-xl border border-white/10 bg-zinc-900/50 overflow-hidden transition-colors duration-300',
-                  openIndex === index && 'border-white/20 bg-zinc-900/80'
+                  'rounded-xl border border-zinc-200/80 dark:border-white/10 bg-white/70 dark:bg-zinc-900/50 backdrop-blur-md overflow-hidden transition-colors duration-300 shadow-xs',
+                  openIndex === index && 'border-zinc-300 dark:border-white/20 bg-white/95 dark:bg-zinc-900/80 shadow-md'
                 )}
               >
                 {/* Question Button */}
@@ -74,12 +74,12 @@ export function FAQSection() {
                   onClick={() => setOpenIndex(openIndex === index ? null : index)}
                   className="w-full flex items-center justify-between px-6 py-5 text-left"
                 >
-                  <span className="text-white font-medium pr-4">{faq.question}</span>
+                  <span className="text-zinc-900 dark:text-white font-medium pr-4">{faq.question}</span>
                   <motion.div
                     animate={{ rotate: openIndex === index ? 180 : 0 }}
                     transition={{ duration: 0.3, ease: 'easeInOut' }}
                   >
-                    <ChevronDown className="h-5 w-5 text-zinc-400 flex-shrink-0" />
+                    <ChevronDown className="h-5 w-5 text-zinc-500 dark:text-zinc-400 flex-shrink-0" />
                   </motion.div>
                 </button>
 
@@ -93,7 +93,7 @@ export function FAQSection() {
                       transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
                     >
                       <div className="px-6 pb-5">
-                        <p className="text-zinc-400 text-sm leading-relaxed">
+                        <p className="text-zinc-600 dark:text-zinc-400 text-sm leading-relaxed">
                           {faq.answer}
                         </p>
                       </div>

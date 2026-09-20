@@ -52,7 +52,6 @@ export function AudioTrimmerClient() {
   const waveformRef = useRef<HTMLDivElement>(null);
   const wavesurferRef = useRef<WaveSurfer | null>(null);
   const regionsPluginRef = useRef<RegionsPlugin | null>(null);
-  const audioFallbackRef = useRef<HTMLAudioElement>(null);
 
   // Format time helper (mm:ss.ms)
   const formatTime = (t: number) => {
@@ -218,19 +217,7 @@ export function AudioTrimmerClient() {
 
   // Playback handlers
   const togglePlay = () => {
-    if (!wavesurferRef.current) {
-      // Fallback to native audio
-      if (audioFallbackRef.current) {
-        if (isPlaying) {
-          audioFallbackRef.current.pause();
-          setIsPlaying(false);
-        } else {
-          audioFallbackRef.current.play();
-          setIsPlaying(true);
-        }
-      }
-      return;
-    }
+    if (!wavesurferRef.current) return;
     setIsPlayingRegion(false);
     wavesurferRef.current.playPause();
   };
@@ -477,18 +464,6 @@ export function AudioTrimmerClient() {
             </div>
           </div>
 
-          {/* Fallback Native Audio Player (always available for instant listening) */}
-          {audioUrl && (
-            <div className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-zinc-900/30 border border-white/5">
-              <span className="text-xs text-zinc-500 shrink-0">Native Player:</span>
-              <audio
-                ref={audioFallbackRef}
-                src={audioUrl}
-                controls
-                className="w-full h-8 max-w-full accent-blue-500"
-              />
-            </div>
-          )}
 
           {/* Mode Toggle */}
           <div className="flex items-center justify-center gap-2">

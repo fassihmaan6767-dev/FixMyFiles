@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
+@variant dark (&:where(.dark, .dark *));
+
 /* ============================================= */
 /* FixMyFiles — Global Styles                    */
-/* Apple-meets-Vercel premium dark aesthetic      */
+/* Apple-meets-Vercel premium dual aesthetic     */
 /* ============================================= */
 
 /* --- Lenis Smooth Scroll Base --- */
@@ -22,14 +24,48 @@ html.lenis, html.lenis body {
   pointer-events: none;
 }
 
-/* --- Base Styles --- */
+/* --- Base Variables: Light Mode Default --- */
 :root {
+  --background: #fafafc;
+  --foreground: #09090b;
+  --card-bg: rgba(255, 255, 255, 0.82);
+  --muted: #52525b;
+  --muted-subtle: #71717a;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-subtle: rgba(0, 0, 0, 0.04);
+  --border-active: rgba(37, 99, 235, 0.3);
+  --accent: #2563eb;
+  --accent-glow: rgba(37, 99, 235, 0.2);
+  --hero-mesh-1: #ffffff;
+  --hero-mesh-2: #eff6ff;
+  --hero-mesh-3: #f1f5f9;
+  --hero-mesh-4: #faf5ff;
+  --hero-mesh-5: #e0e7ff;
+  --radial-fade: #fafafc;
+  --heading: #09090b;
+  --body-text: #52525b;
+}
+
+/* --- Base Variables: Dark Mode --- */
+.dark {
   --background: #09090b;
   --foreground: #fafafa;
+  --card-bg: rgba(18, 18, 22, 0.75);
   --muted: #a1a1aa;
+  --muted-subtle: #71717a;
   --border: rgba(255, 255, 255, 0.1);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-active: rgba(59, 130, 246, 0.4);
   --accent: #3b82f6;
   --accent-glow: rgba(59, 130, 246, 0.4);
+  --hero-mesh-1: #09090b;
+  --hero-mesh-2: #1e1b4b;
+  --hero-mesh-3: #172554;
+  --hero-mesh-4: #09090b;
+  --hero-mesh-5: #1a0a2e;
+  --radial-fade: #09090b;
+  --heading: #fafafa;
+  --body-text: #a1a1aa;
 }
 
 body {
@@ -38,6 +74,7 @@ body {
   font-feature-settings: "rlig" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* --- Animated Mesh Gradient for Hero --- */
@@ -53,28 +90,28 @@ body {
 .mesh-gradient {
   background: linear-gradient(
     -45deg,
-    #09090b,
-    #1e1b4b,
-    #172554,
-    #09090b,
-    #1a0a2e
+    var(--hero-mesh-1),
+    var(--hero-mesh-2),
+    var(--hero-mesh-3),
+    var(--hero-mesh-4),
+    var(--hero-mesh-5)
   );
   background-size: 400% 400%;
-  animation: meshGradient 15s ease infinite;
+  animation: meshGradient 16s ease infinite;
 }
 
 /* --- Glassmorphism Utility --- */
 .glass {
-  background: rgba(9, 9, 11, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--card-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--border);
 }
 
 /* --- Selection Color --- */
 ::selection {
-  background: rgba(59, 130, 246, 0.3);
-  color: #fafafa;
+  background: var(--accent-glow);
+  color: var(--foreground);
 }
 
 /* --- Scrollbar Styling --- */
@@ -85,20 +122,20 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--border-active);
 }
 
-/* --- Prose Layout for Legal Pages --- */
+/* --- Prose Layout for Legal & Tool Article Pages --- */
 .prose-custom h1 {
   font-size: 2.25rem;
   font-weight: 700;
   letter-spacing: -0.025em;
   margin-bottom: 1rem;
-  color: #fafafa;
+  color: var(--heading);
 }
 .prose-custom h2 {
   font-size: 1.5rem;
@@ -106,24 +143,108 @@ body {
   letter-spacing: -0.02em;
   margin-top: 2.5rem;
   margin-bottom: 0.75rem;
-  color: #e4e4e7;
+  color: var(--heading);
+}
+.prose-custom h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--heading);
 }
 .prose-custom p {
   font-size: 1.0625rem;
   line-height: 1.8;
-  color: #a1a1aa;
+  color: var(--body-text);
   margin-bottom: 1.25rem;
 }
 .prose-custom a {
-  color: #60a5fa;
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color 0.2s;
 }
 .prose-custom a:hover {
-  color: #93bbfc;
+  opacity: 0.8;
 }
 .prose-custom strong {
-  color: #e4e4e7;
+  color: var(--heading);
   font-weight: 600;
+}
+.prose-custom ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.prose-custom ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.prose-custom li {
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--body-text);
+  margin-bottom: 0.5rem;
+}
+
+/* --- FAQ Accordion --- */
+.faq-item {
+  border-bottom: 1px solid var(--border);
+}
+.faq-item:last-child {
+  border-bottom: none;
+}
+.faq-item summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--heading);
+  transition: color 0.2s;
+}
+.faq-item summary:hover {
+  color: var(--accent);
+}
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+.faq-item summary::marker {
+  display: none;
+  content: '';
+}
+.faq-item .faq-chevron {
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.faq-item[open] .faq-chevron {
+  transform: rotate(180deg);
+  color: var(--accent);
+}
+.faq-item .faq-answer {
+  padding-bottom: 1.2rem;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--body-text);
+}
+
+/* --- Cookie Banner --- */
+.cookie-banner-enter {
+  animation: slideUp 0.3s ease-out forwards;
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }

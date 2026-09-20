@@ -5,8 +5,8 @@ import { usePathname } from 'next/navigation';
 
 /**
  * PageTransitionProvider
- * Clean single-pass route crossfade.
- * initial={false} prevents double-animation on initial load and hydration.
+ * Buttery smooth Apple/Vercel-inspired page transitions with soft fade & subtle glide.
+ * Uses AnimatePresence mode="wait" to prevent layout collisions during navigation.
  */
 export function PageTransitionProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -15,10 +15,14 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={pathname}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.18, ease: 'easeInOut' }}
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -6 }}
+        transition={{
+          duration: 0.24,
+          ease: [0.22, 1, 0.36, 1], // fluid cubic-bezier curve
+        }}
+        className="w-full flex-1 flex flex-col"
       >
         {children}
       </motion.div>

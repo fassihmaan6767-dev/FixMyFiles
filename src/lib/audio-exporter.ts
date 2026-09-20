@@ -183,31 +183,64 @@ export async function exportAudioBuffer(
   baseFilename: string
 ): Promise<void> {
   const cleanBase = baseFilename.replace(/\.[^.]+$/, '');
-  let blob: Blob;
-  let filename: string;
-
   const fmt = format.toLowerCase();
+  const filename = `${cleanBase}.${fmt}`;
 
-  if (fmt === 'mp3') {
-    try {
-      blob = await encodeMP3(buffer);
-      filename = `${cleanBase}.mp3`;
-    } catch (e) {
-      console.warn('MP3 encoding failed, falling back to WAV:', e);
-      blob = encodeWAV(buffer);
-      filename = `${cleanBase}.wav`;
-    }
-  } else if (fmt === 'webm') {
-    blob = await encodeWebMOrOgg(buffer, 'audio/webm');
-    filename = `${cleanBase}.webm`;
-  } else if (fmt === 'ogg') {
-    blob = await encodeWebMOrOgg(buffer, 'audio/ogg;codecs=opus');
-    filename = `${cleanBase}.ogg`;
-  } else {
-    // Default WAV
-    blob = encodeWAV(buffer);
-    filename = `${cleanBase}.wav`;
+  try {
+    // 1. Off-thread Web Worker pipeline (Multi-threaded & non-blocking)
+    const { exportPipeline } = await import('@/lib/export-pipeline');
+    await exportPipeline.exportAudio(buffer, fmt, cleanBase);
+    return;
+  } catch (workerErr) {
+    console.warn('Worker export encountered issue, falling back to local fallback stream:', workerErr);
   }
 
-  downloadBlob(blob, filename);
+  // 2. Fallback execution with continuous progress pulses
+  let downloadId: string | null = null;
+  let store: any = null;
+
+  try {
+    const { useDownloadStore } = await import('@/store/use-download-store');
+    store = useDownloadStore.getState();
+    downloadId = store.addDownload({
+      filename,
+      format: fmt,
+      engine: 'worker-native',
+      initialMessage: 'Extracting audio channels...',
+    });
+    store.setProgress(downloadId, 25, 'Processing channel data...');
+  } catch {}
+
+  let blob: Blob;
+
+  try {
+    if (downloadId && store) store.setProgress(downloadId, 45, `Encoding into ${fmt.toUpperCase()}...`);
+
+    if (fmt === 'mp3') {
+      try {
+        blob = await encodeMP3(buffer);
+      } catch (e) {
+        console.warn('MP3 encoding fallback to WAV:', e);
+        blob = encodeWAV(buffer);
+      }
+    } else if (fmt === 'webm') {
+      blob = await encodeWebMOrOgg(buffer, 'audio/webm');
+    } else if (fmt === 'ogg') {
+      blob = await encodeWebMOrOgg(buffer, 'audio/ogg;codecs=opus');
+    } else {
+      blob = encodeWAV(buffer);
+    }
+
+    if (downloadId && store) {
+      store.setProgress(downloadId, 95, 'Finalizing download package...');
+      store.completeDownload(downloadId, blob, filename);
+    } else {
+      downloadBlob(blob, filename);
+    }
+  } catch (err: any) {
+    if (downloadId && store) {
+      store.failDownload(downloadId, err.message || 'Export failed');
+    }
+    throw err;
+  }
 }

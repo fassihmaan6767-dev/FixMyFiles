@@ -72,66 +72,29 @@ export function ExtractAudioClient() {
       console.warn('Native extraction bypassed, falling back to FFmpeg.wasm:', nativeErr);
     }
 
-    // PATH 2: FFmpeg.wasm Fallback for complex/unsupported video containers
+    // PATH 2: Multi-Threaded FFmpeg.wasm Off-Thread Worker
     try {
-      setStatus('Loading FFmpeg.wasm fallback engine...');
+      setStatus('Dispatching to Multi-Threaded FFmpeg Worker (@ffmpeg/core-mt)...');
       setProgress(20);
 
-      const { FFmpeg } = await import('@ffmpeg/ffmpeg');
-      const { fetchFile, toBlobURL } = await import('@ffmpeg/util');
-
-      const ffmpeg = new FFmpeg();
-
-      ffmpeg.on('log', ({ message }) => {
-        const timeMatch = message.match(/time=(\d+):(\d+):(\d+\.\d+)/);
-        if (timeMatch) {
-          const hours = parseInt(timeMatch[1]);
-          const minutes = parseInt(timeMatch[2]);
-          const seconds = parseFloat(timeMatch[3]);
-          const currentTime = hours * 3600 + minutes * 60 + seconds;
-          const videoEl = document.querySelector('video');
-          if (videoEl && videoEl.duration > 0) {
-            const pct = Math.min(95, Math.max(30, Math.round((currentTime / videoEl.duration) * 100)));
-            setProgress(pct);
-          }
-        }
-      });
-
-      setStatus('Loading FFmpeg core libraries...');
-      const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/esm';
-      await ffmpeg.load({
-        coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-        wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-      });
-
-      setStatus('Processing and stripping video...');
-      setProgress(50);
+      const { exportPipeline } = await import('@/lib/export-pipeline');
+      const baseName = file.name.replace(/\.[^.]+$/, '');
+      const outputFilename = `${baseName}_audio.${format}`;
 
       const ext = file.name.substring(file.name.lastIndexOf('.')) || '.mp4';
       const inputName = `input${ext}`;
       const outputName = format === 'wav' ? 'output.wav' : 'output.mp3';
 
-      await ffmpeg.writeFile(inputName, await fetchFile(file));
+      const args =
+        format === 'wav'
+          ? ['-i', inputName, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', outputName]
+          : ['-i', inputName, '-vn', '-acodec', 'libmp3lame', '-b:a', '192k', outputName];
 
-      if (format === 'wav') {
-        await ffmpeg.exec(['-i', inputName, '-vn', '-acodec', 'pcm_s16le', '-ar', '44100', outputName]);
-      } else {
-        await ffmpeg.exec(['-i', inputName, '-vn', '-acodec', 'libmp3lame', '-b:a', '192k', outputName]);
-      }
-
-      setProgress(95);
-      setStatus('Preparing download...');
-
-      const data = await ffmpeg.readFile(outputName);
-      const blob = new Blob([data as unknown as BlobPart], { type: format === 'wav' ? 'audio/wav' : 'audio/mp3' });
-
-      const baseName = file.name.replace(/\.[^.]+$/, '');
-      downloadBlob(blob, `${baseName}_audio.${format}`);
+      await exportPipeline.transcodeMedia(file, outputFilename, format, args);
 
       setProgress(100);
-      setStatus('Done!');
+      setStatus('Audio extracted successfully via Multi-Threaded WASM!');
       setEngineUsed('ffmpeg');
-      ffmpeg.terminate();
     } catch (err) {
       console.error('Extraction failed:', err);
       setError('Could not extract audio. Please check that your video contains an audio track.');

@@ -6,6 +6,9 @@ import { Footer } from '@/components/layout/footer';
 import { SmoothScrollProvider } from '@/components/providers/smooth-scroll-provider';
 import { PageTransitionProvider } from '@/components/providers/page-transition-provider';
 import { WebSiteSchemaMarkup } from '@/components/seo/schema-markup';
+import { CookieBanner } from '@/components/ui/cookie-banner';
+import { ThemeProvider } from '@/components/providers/theme-provider';
+import { DownloadManager } from '@/components/download/download-manager';
 
 /**
  * Inter — The go-to sans-serif for premium web UIs.
@@ -95,18 +98,27 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} dark`}>
-      <body className="font-sans antialiased bg-zinc-950 text-zinc-50 min-h-screen flex flex-col">
-        <WebSiteSchemaMarkup />
-        <SmoothScrollProvider>
-          <Header />
-          <main className="flex-1 pt-16">
-            <PageTransitionProvider>
-              {children}
-            </PageTransitionProvider>
-          </main>
-          <Footer />
-        </SmoothScrollProvider>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <body className="font-sans antialiased bg-[var(--background)] text-[var(--foreground)] min-h-screen flex flex-col transition-colors duration-200">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange={false}
+        >
+          <WebSiteSchemaMarkup />
+          <SmoothScrollProvider>
+            <Header />
+            <main className="flex-1 pt-16">
+              <PageTransitionProvider>
+                {children}
+              </PageTransitionProvider>
+            </main>
+            <Footer />
+            <CookieBanner />
+            <DownloadManager />
+          </SmoothScrollProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

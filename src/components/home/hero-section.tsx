@@ -7,7 +7,7 @@ import { MagneticButton } from '@/components/ui/magnetic-button';
 /**
  * HeroSection
  * The showstopper landing hero with:
- * - Animated mesh gradient background
+ * - Animated mesh gradient background (responsive to theme)
  * - Massive headline with staggered reveal
  * - Feature badges
  * - Pulsing CTA button
@@ -49,14 +49,14 @@ export function HeroSection() {
       {/* --- Animated Mesh Gradient Background --- */}
       <div className="absolute inset-0 mesh-gradient" />
 
-      {/* --- Radial Overlay for Depth --- */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,#09090b_70%)]" />
+      {/* --- Radial Overlay for Depth (smooth blend into background) --- */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,var(--radial-fade)_75%)]" />
 
       {/* --- Subtle Grid Pattern --- */}
       <div
-        className="absolute inset-0 opacity-[0.03]"
+        className="absolute inset-0 opacity-[0.04] dark:opacity-[0.03]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23888888' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }}
       />
 
@@ -65,11 +65,11 @@ export function HeroSection() {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="relative z-10 text-center px-4 max-w-4xl mx-auto"
+        className="relative z-10 text-center px-4 max-w-4xl mx-auto pt-8"
       >
         {/* Badge */}
         <motion.div variants={itemVariants} className="mb-8">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-xs">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
@@ -81,11 +81,11 @@ export function HeroSection() {
         {/* Headline */}
         <motion.h1
           variants={itemVariants}
-          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white leading-[0.9] mb-6"
+          className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-zinc-900 dark:text-white leading-[0.92] mb-6"
         >
           Solve File Problems.
           <br />
-          <span className="bg-gradient-to-r from-blue-400 via-blue-300 to-cyan-300 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-500 dark:from-blue-400 dark:via-blue-300 dark:to-cyan-300 bg-clip-text text-transparent">
             Zero Server Uploads.
           </span>
         </motion.h1>
@@ -93,7 +93,7 @@ export function HeroSection() {
         {/* Subtitle */}
         <motion.p
           variants={itemVariants}
-          className="text-lg sm:text-xl text-zinc-400 max-w-2xl mx-auto mb-8 leading-relaxed"
+          className="text-lg sm:text-xl text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto mb-8 leading-relaxed"
         >
           Trim audio, resize images, merge PDFs, and format code — all instantly
           in your browser. No signups. No uploads. Just results.
@@ -102,14 +102,14 @@ export function HeroSection() {
         {/* Feature Badges */}
         <motion.div
           variants={itemVariants}
-          className="flex flex-wrap items-center justify-center gap-4 mb-10"
+          className="flex flex-wrap items-center justify-center gap-3.5 mb-10"
         >
           {features.map((feature) => (
             <div
               key={feature.label}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-sm text-zinc-300"
+              className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 dark:bg-white/5 border border-zinc-200/80 dark:border-white/10 text-sm text-zinc-700 dark:text-zinc-300 backdrop-blur-md shadow-xs"
             >
-              <feature.icon className="h-4 w-4 text-blue-400" />
+              <feature.icon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
               {feature.label}
             </div>
           ))}

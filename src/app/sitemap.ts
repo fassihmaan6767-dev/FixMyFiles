@@ -60,7 +60,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }));
 
   // ─── Informational / Legal Pages ────────────────────────────
-  const infoRoutes = ['/about', '/privacy', '/terms'];
+  const infoRoutes = ['/about', '/privacy', '/terms', '/contact'];
   const infoPages: MetadataRoute.Sitemap = infoRoutes.map((path) => ({
     url: `${BASE_URL}${path}`,
     lastModified: now,
